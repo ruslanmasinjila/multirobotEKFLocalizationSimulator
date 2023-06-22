@@ -6,8 +6,8 @@ class Robot:
         # Pose  = [x,y,theta]
         # Sigma = 3x3 Matrix
         
-        self.deltaRHO                  =   0.05
-        self.deltaPHI                  =   0.1
+        self.deltaRHO                  =   0.0
+        self.deltaPHI                  =   0.0
         
         self.actualPose                =   []
         self.estimatedPose             =   []
