@@ -19,11 +19,11 @@ class Robot:
         
         self.actualPose                =   []
         self.estimatedPose             =   []
-        self.covarianceMatrix          =   []
+        self.sigma                     =   []
         
         self.actualPose.append(initialActualPose)
         self.estimatedPose.append(initialActualPose)
-        self.covarianceMatrix.append(np.zeros((3,3)))
+        self.sigma.append(np.zeros((3,3)))
     
         
     def moveRobot(self, newActualPose):

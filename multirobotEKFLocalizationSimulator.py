@@ -81,6 +81,9 @@ def estimatePoseMovedRobot(movedRobot,stationaryRobot):
                      [math.sin(thetaPlusPhiStationaryRobot), rho_stationaryRobot*math.cos(thetaPlusPhiStationaryRobot),0],
                      [0,1,-1]        
     ])
+    
+    lastSigmaMovedRobot = movedRobot.sigma[-1]
+    movedRobot.sigmaBar            = (Gmut)@(lastSigmaMovedRobot)@(np.transpose(Gmut)) + (Gut)@(Ut)@(np.transpose(Gut))
         
     
 #################################################### 
@@ -88,11 +91,10 @@ def estimatePoseMovedRobot(movedRobot,stationaryRobot):
 ####################################################
 
 # Move Robot
-# Take Relative Measurements
-# Estimate Position (xBar, yBar and thetaBar)
-# Estimate Covariance
-# Take the second relative measurements
-# Estimate Location of second Landmark
+# Take Relative Measurements of ut
+# Estimate Position (xBar, yBar and thetaBar) and covariance matrix
+# Take the second relative measurements 
+# Estimate Location of second Landmark using estimated positions only
 
 # Create two test robots
 movedRobot          = Robot(np.array([-10,2,4.1]))
@@ -106,5 +108,6 @@ estimatePoseMovedRobot(movedRobot,stationaryRobot)
 print([movedRobot.xBar,movedRobot.yBar,movedRobot.thetaBar])
 print(list(movedRobot.actualPose))
 print(list(movedRobot.estimatedPose))
+print(list(movedRobot.sigmaBar))
 
 
