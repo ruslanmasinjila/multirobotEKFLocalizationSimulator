@@ -15,6 +15,7 @@ class Robot:
         self.xBar                      =   None
         self.yBar                      =   None
         self.thetaBar                  =   None
+        self.sigmaBar                  =   None
         
         self.actualPose                =   []
         self.estimatedPose             =   []
