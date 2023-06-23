@@ -8,6 +8,8 @@ class Robot:
         
         self.rho                       =   None
         self.phi                       =   None
+        self.rhoBar                    =   None
+        self.phiBar                    =   None
         
         self.deltaRHO                  =   0.0
         self.deltaPHI                  =   0.0

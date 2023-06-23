@@ -3,7 +3,7 @@ import math
 from Robot import Robot
 
 
-def getRangeBearingMeasurements(observingRobot, observedRobot):
+def getRhoPhiMeasurements(observingRobot, observedRobot):
     
     # Simulate rho,phi measurements with errors
     xActual_observedRobot      = observedRobot.actualPose[-1][0]
@@ -29,7 +29,31 @@ def getRangeBearingMeasurements(observingRobot, observedRobot):
     observingRobot.rho = rho
     observingRobot.phi = phi
        
-    return observingRobot
+    observingRobot
+    
+def getRhoBarPhiBarMeasurements(observingRobot, observedRobot):
+    
+    xEstimated_observedRobot      = observedRobot.estimatedPose[-1][0]
+    yEstimated_observedRobot      = observedRobot.estimatedPose[-1][1]
+    
+    xEstimated_observingRobot     = observingRobot.xBar
+    yEstimated_observingRobot     = observingRobot.yBar
+    thetaEstimated_observingRobot = observingRobot.thetaBar
+    
+
+    
+    rhoBar = (math.sqrt((xEstimated_observedRobot-xEstimated_observingRobot)**2  +        
+                     (yEstimated_observedRobot-yEstimated_observingRobot)**2))
+    
+    phiBar = (math.atan2(yEstimated_observedRobot-yEstimated_observingRobot, xEstimated_observedRobot-xEstimated_observingRobot) -             
+                     thetaEstimated_observingRobot)     
+    
+    phiBar = (2*math.pi + phiBar)%(2*math.pi)
+    
+    observingRobot.rhoBar = rhoBar
+    observingRobot.phiBar = phiBar
+       
+    observingRobot
 
 
 # Estimate Pose of the moved Robot
@@ -96,18 +120,39 @@ def estimatePoseMovedRobot(movedRobot,stationaryRobot):
 # Take the second relative measurements 
 # Estimate Location of second Landmark using estimated positions only
 
-# Create two test robots
-movedRobot          = Robot(np.array([-10,2,4.1]))
-stationaryRobot     = Robot(np.array([10,1,0]))
+# Create three test robots
+movedRobot           = Robot(np.array([-10,2,4.1]))
+stationaryRobot1     = Robot(np.array([10,1,0]))
+stationaryRobot2     = Robot(np.array([-15,5,-2]))
 
-# Get relative Range Bearing Measurements
-movedRobot          = getRangeBearingMeasurements(movedRobot, stationaryRobot)
-stationaryRobot     = getRangeBearingMeasurements(stationaryRobot,movedRobot)
+# Get relative Range Bearing Measurements between moved robot and Stationary Robot1
+getRhoPhiMeasurements(movedRobot, stationaryRobot1)
+getRhoPhiMeasurements(stationaryRobot1,movedRobot)
 
-estimatePoseMovedRobot(movedRobot,stationaryRobot)
+# Estimate Pose and Covariance Matrix of Robot1
+estimatePoseMovedRobot(movedRobot,stationaryRobot1)
 print([movedRobot.xBar,movedRobot.yBar,movedRobot.thetaBar])
+print([movedRobot.rhoBar,movedRobot.phiBar])
 print(list(movedRobot.actualPose))
 print(list(movedRobot.estimatedPose))
 print(list(movedRobot.sigmaBar))
+
+print("===============================================================")
+
+# Get relative Range Bearing Measurements between moved robot and Stationary Robot2
+getRhoPhiMeasurements(movedRobot, stationaryRobot2)
+getRhoPhiMeasurements(stationaryRobot2,movedRobot)
+
+
+
+# Estimate rho, and phi of Stationary robot 2 w.r.t moving robot
+getRhoBarPhiBarMeasurements(movedRobot, stationaryRobot2)
+print([movedRobot.xBar,movedRobot.yBar,movedRobot.thetaBar])
+print([movedRobot.rhoBar,movedRobot.phiBar])
+print([movedRobot.rho,movedRobot.phi])
+print(list(movedRobot.actualPose))
+print(list(movedRobot.estimatedPose))
+print(list(movedRobot.sigmaBar))
+
 
 
