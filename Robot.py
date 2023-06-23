@@ -6,8 +6,15 @@ class Robot:
         # Pose  = [x,y,theta]
         # Sigma = 3x3 Matrix
         
+        self.rho                       =   None
+        self.phi                       =   None
+        
         self.deltaRHO                  =   0.0
         self.deltaPHI                  =   0.0
+        
+        self.xBar                      =   None
+        self.yBar                      =   None
+        self.thetaBar                  =   None
         
         self.actualPose                =   []
         self.estimatedPose             =   []
@@ -18,10 +25,5 @@ class Robot:
         self.covarianceMatrix.append(np.zeros((3,3)))
     
         
-    def addPose(self, newActualPose, newEstimatedPose, newCovarianceMatrix):
+    def moveRobot(self, newActualPose):
         self.actualPose.append(newActualPose)
-        self.estimatedPose.append(newEstimatedPose)
-        self.covarianceMatrix.append(newCovarianceMatrix)
-        
-    def getPose(self):
-        return self.actualPose[-1],self.estimatedPose[-1],self.covarianceMatrix[-1]
