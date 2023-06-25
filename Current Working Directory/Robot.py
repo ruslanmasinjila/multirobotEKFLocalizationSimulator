@@ -1,3 +1,6 @@
+#############################################
+# AUTHOR: Ruslan Masinjila
+#############################################
 import math
 import random
 import numpy as np
@@ -20,25 +23,27 @@ class Robot:
         self.yEstimated             = []
         self.thetaEstimated         = []
         
+        self.muBar                  = None
+        
         self.sigma                  = []
+        self.sigmaBar               = None
  
-        self.xBar                   =   None
-        self.yBar                   =   None
-        self.thetaBar               =   None
-        self.muBar                  =   None
+        self.xBar                   = None
+        self.yBar                   = None
+        self.thetaBar               = None
+   
         
-        self.sigmaBar               =   None
         
-        self.rhoBar                 =   None
-        self.phiBar                 =   None
-        self.ZBar                   =   None
+        self.rhoBar                 = None
+        self.phiBar                 = None
+        self.ZBar                   = None
         
-        self.rho                    =   None
-        self.phi                    =   None
-        self.Z                      =   None
+        self.rho                    = None
+        self.phi                    = None
+        self.Z                      = None
         
-        self.deltaRHO               =   0.05
-        self.deltaPHI               =   0.05
+        self.deltaRHO               = 0.05
+        self.deltaPHI               = 0.05
         
         self.moveRobot()
 

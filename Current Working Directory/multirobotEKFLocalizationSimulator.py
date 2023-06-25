@@ -137,34 +137,37 @@ def updatePoseMovingRobot(m,c):
     xEstimated_c      = c.xEstimated[-1]
     yEstimated_c      = c.yEstimated[-1]
     
-    xBar                            = m.xBar
-    yBar                            = m.yBar
-    thetaBar                        = m.thetaBar
+    xBar_m                          = m.xBar
+    yBar_m                          = m.yBar
+    thetaBar_m                      = m.thetaBar
     
-    ZBar                            = m.ZBar
-    Z                               = m.Z
+    ZBar_m                          = m.ZBar
+    Z_m                             = m.Z
     
     sigma_c                         = c.sigma[-1]
     
-    q  = (math.sqrt((xEstimated_c-xBar)**2  + (yEstimated_c-yBar)**2))
+    q  = (math.sqrt((xEstimated_c-xBar_m)**2  + (yEstimated_c-yBar_m)**2))
     
-    Hr = (1/q)*np.array([[-(xEstimated_c-xBar),  -(yEstimated_c-yBar)  , 0],
-                         [ (yEstimated_c-yBar)/q,-(xEstimated_c-xBar)/q,-q]
+    Hr = (1/q)*np.array([[-(xEstimated_c-xBar_m),  -(yEstimated_c-yBar_m)  , 0],
+                         [ (yEstimated_c-yBar_m)/q,-(xEstimated_c-xBar_m)/q,-q]
     ])
     
-    Hl = (1/q)*np.array([[ (xEstimated_c-xBar),    (yEstimated_c-yBar),0],
-                         [-(yEstimated_c-yBar)/q,(xEstimated_c-xBar)/q,0]
+    Hl = (1/q)*np.array([[ (xEstimated_c-xBar_m),    (yEstimated_c-yBar_m),0],
+                         [-(yEstimated_c-yBar_m)/q,(xEstimated_c-xBar_m)/q,0]
     ])
     
     Qt = np.array([[(m.deltaRHO)**2,0],
                    [0,(m.deltaPHI)**2]
     ])
     
-    S = (Hr)@(m.sigmaBar)@(np.transpose(Hr)) + (Hl)@(sigma_c)@(np.transpose(Hl)) + Qt
+    S    = (Hr)@(m.sigmaBar)@(np.transpose(Hr)) + (Hl)@(sigma_c)@(np.transpose(Hl)) + Qt
 
     Kt   = (m.sigmaBar)@(np.transpose(Hr))@(np.linalg.inv(S))
     
-    m.muBar = m.muBar + Kt@(Z-ZBar)
+    # NOTE: At this point this is no longer muBar or sigmaBar, but mu and sigma.
+    # muBar and sigmaBar are left on purpose in case there are multiple landmarks/observations used in the Correction Step
+    # If multiple landmarks are used, then the muBar and sigmaBar become mu and sigma for the following correction step
+    m.muBar     = m.muBar + Kt@(Z_m-ZBar_m)
     m.sigmaBar  = (np.identity(3)-(Kt)@(Hr))@(m.sigmaBar)
 
 
@@ -224,9 +227,7 @@ def runSimulation():
 
             # Estimate the Pose and Covariance Matrix (Sigma) of the Moving Robot (m)  
             estimatePoseMovingRobot(m,p) 
-            
- 
-
+          
 
             # Perform pose corrections using the remaining stationary robots (Correction Station Robots)
             
@@ -235,14 +236,16 @@ def runSimulation():
                 # Get the actual robot using its IDs
                 c = robots[c]
                 
-                # Get Z of the Moving Robot (m)
+                # Get Z_m of the Moving Robot (m)
                 getRhoPhiMeasurements(m,c)
             
-                # Estimate ZBar of the Moving Robot (m)
+                # Estimate ZBar_m of the Moving Robot (m)
                 getRhoBarPhiBarMeasurements(m, c)
                 
                 # Update the pose of the moving robot (m)
                 updatePoseMovingRobot(m,c)
+                
+            # Update the Estimated Pose of moving robot (m) after all Correction Stationary Robot (c) have been observed.
             m.xEstimated.append(m.muBar[0][0])
             m.yEstimated.append(m.muBar[1][0])
             m.thetaEstimated.append(m.muBar[2][0])
@@ -252,8 +255,6 @@ def runSimulation():
             break
             
     return robots
-            
-robots = runSimulation()
 ###################################################################################################################################
 
 
