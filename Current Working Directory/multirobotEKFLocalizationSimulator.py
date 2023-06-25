@@ -8,7 +8,6 @@ from Robot import *
 
 ###################################################################################################################################
 
-
 def getRhoPhiMeasurements(observingRobot, targetRobot):
     
     # Simulate actual rho,phi measurements with zero-mean Gaussian noise
@@ -103,6 +102,7 @@ def estimatePoseMovingRobot(m,p):
     m.sigmaBar            = (Gmut)@(previousSigma_m)@(np.transpose(Gmut)) + (Gut)@(Ut)@(np.transpose(Gut))
     
 ###################################################################################################################################
+
 def getRhoBarPhiBarMeasurements(m, c):
     
     xEstimated_c     = c.xEstimated[-1]
@@ -131,6 +131,7 @@ def getRhoBarPhiBarMeasurements(m, c):
            
 
 ###################################################################################################################################
+
 # Update Pose of the Moving Robot (m)
 def updatePoseMovingRobot(m,c):
 
@@ -166,19 +167,16 @@ def updatePoseMovingRobot(m,c):
     
     # NOTE: At this point this is no longer muBar or sigmaBar, but mu and sigma.
     # muBar and sigmaBar are left on purpose in case there are multiple landmarks/observations used in the Correction Step
-    # If multiple landmarks are used, then the muBar and sigmaBar become mu and sigma for the following correction step
+    # If multiple landmarks are used, then the muBar and sigmaBar of each correction step become 
+    # mu and sigma for the next correction step
     m.muBar     = m.muBar + Kt@(Z_m-ZBar_m)
     m.sigmaBar  = (np.identity(3)-(Kt)@(Hr))@(m.sigmaBar)
 
 
-def runSimulation():
+def runSimulation(numRobots,numMoves,moveSize):
 
     robots         =  []
     availableMoves =  []
-
-    numRobots       = 3
-    numMoves        = 5
-    moveSize        = 5
     
     for i in range(numRobots):
         robots.append(Robot(i,numMoves,moveSize))
@@ -199,15 +197,15 @@ def runSimulation():
             m = robotToMove
            
             # A list of all stationary robots (i.e every other robot apart from m)
-            ps = [i for i in range(len(availableMoves)) if i != m]
+            P = [i for i in range(len(availableMoves)) if i != m]
             
             # Select one of the stationary robots for control input and pose estimation in the prediction step of the EKF
             # Call this robot p (Prediction Stationary Robot)
-            p = random.choice(ps)
+            p = random.choice(P)
             
             # The rest of the stationary robots are for pose correction in the correction step of the EKF
             # Call each of these robots c (Correction Stationary Robot)
-            C = [i for i in ps if i != p]
+            C = [i for i in P if i != p]
             
 
             ###################################################################################################
@@ -215,7 +213,7 @@ def runSimulation():
             
             # Get the actual robots using their IDs
             m  = robots[m]
-            p = robots[p]
+            p  = robots[p]
             
             # Move the robot and update remaining available moves of the robot
             m.moveRobot()
@@ -230,7 +228,6 @@ def runSimulation():
           
 
             # Perform pose corrections using the remaining stationary robots (Correction Station Robots)
-            
             for c in C:
             
                 # Get the actual robot using its IDs
