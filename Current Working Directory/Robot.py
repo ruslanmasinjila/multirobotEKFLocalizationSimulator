@@ -4,11 +4,11 @@ import numpy as np
 class Robot:
     
 
-    def __init__(self, robotID,numSteps,stepSize):
+    def __init__(self, robotID,numMoves,moveSize):
     
         self.robotID                = robotID
-        self.availableSteps         = numSteps
-        self.stepSize               = stepSize
+        self.availableMoves         = numMoves
+        self.moveSize               = moveSize
         
         self.xActual                = []
         self.yActual                = []
@@ -24,11 +24,11 @@ class Robot:
        
 
     def moveRobot(self):
-        if(self.availableSteps>0):
+        if(self.availableMoves>0):
             resolvingAngle = random.uniform(0, 2*math.pi) 
             if(len(self.xActual)==0):
-                self.xActual.append(self.stepSize*math.cos(resolvingAngle))
-                self.yActual.append(self.stepSize*math.sin(resolvingAngle))
+                self.xActual.append(self.moveSize*math.cos(resolvingAngle))
+                self.yActual.append(self.moveSize*math.sin(resolvingAngle))
                 self.thetaActual.append(random.uniform(0, 2*math.pi)) 
                 
                 self.xEstimated.append(self.xActual[-1])
@@ -36,11 +36,11 @@ class Robot:
                 self.thetaEstimated.append(self.thetaActual[-1])
              
             else:
-                self.xActual.append(self.xActual[-1]+self.stepSize*math.cos(resolvingAngle))
-                self.yActual.append(self.yActual[-1]+self.stepSize*math.sin(resolvingAngle))
+                self.xActual.append(self.xActual[-1]+self.moveSize*math.cos(resolvingAngle))
+                self.yActual.append(self.yActual[-1]+self.moveSize*math.sin(resolvingAngle))
                 self.thetaActual.append(random.uniform(0, 2*math.pi))
             
-            self.availableSteps = self.availableSteps - 1
+            self.availableMoves = self.availableMoves - 1
         
         
         
