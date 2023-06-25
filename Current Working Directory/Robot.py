@@ -42,8 +42,8 @@ class Robot:
         self.phi                    = None
         self.Z                      = None
         
-        self.deltaRHO               = 0.05
-        self.deltaPHI               = 0.05
+        self.deltaRHO               = 0.01
+        self.deltaPHI               = 0.01
         
         self.moveRobot()
 
