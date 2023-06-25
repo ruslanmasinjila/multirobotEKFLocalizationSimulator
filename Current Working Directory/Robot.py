@@ -19,19 +19,26 @@ class Robot:
         self.xEstimated             = []
         self.yEstimated             = []
         self.thetaEstimated         = []
+        
+        self.sigma                  = []
  
-        self.xBar                      =   None
-        self.yBar                      =   None
-        self.thetaBar                  =   None
-        self.sigmaBar                  =   None
+        self.xBar                   =   None
+        self.yBar                   =   None
+        self.thetaBar               =   None
+        self.muBar                  =   None
         
-        self.rho                       =   None
-        self.rhoBar                    =   None
-        self.deltaRHO                  =   0.0
+        self.sigmaBar               =   None
         
-        self.phi                       =   None
-        self.phiBar                    =   None
-        self.deltaPHI                  =   0.0
+        self.rhoBar                 =   None
+        self.phiBar                 =   None
+        self.ZBar                   =   None
+        
+        self.rho                    =   None
+        self.phi                    =   None
+        self.Z                      =   None
+        
+        self.deltaRHO               =   0.05
+        self.deltaPHI               =   0.05
         
         self.moveRobot()
 
@@ -48,6 +55,8 @@ class Robot:
                 self.xEstimated.append(self.xActual[-1])
                 self.yEstimated.append(self.yActual[-1])
                 self.thetaEstimated.append(self.thetaActual[-1])
+                
+                self.sigma.append(np.zeros((3,3)))
              
             else:
                 self.xActual.append(self.xActual[-1]+self.moveSize*math.cos(resolvingAngle))
