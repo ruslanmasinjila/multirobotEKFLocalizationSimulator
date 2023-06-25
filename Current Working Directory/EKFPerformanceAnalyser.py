@@ -27,5 +27,5 @@ for r in robots:
     thetaEstimated  = r.thetaEstimated
     estimatedPose   = [np.array([[a],[b],[c]]) for a, b, c in zip(xEstimated, yEstimated, thetaEstimated)]
     
-    # Get Sigma
+    # Get Sigma.
     sigma           = r.sigma
