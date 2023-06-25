@@ -3,6 +3,8 @@ import math
 from Robot import Robot
 
 
+#########################################################################################################
+
 def getRhoPhiMeasurements(observingRobot, observedRobot):
     
     # Simulate rho,phi measurements with errors
@@ -31,31 +33,8 @@ def getRhoPhiMeasurements(observingRobot, observedRobot):
        
     observingRobot
     
-def getRhoBarPhiBarMeasurements(observingRobot, observedRobot):
-    
-    xEstimated_observedRobot      = observedRobot.estimatedPose[-1][0]
-    yEstimated_observedRobot      = observedRobot.estimatedPose[-1][1]
-    
-    xEstimated_observingRobot     = observingRobot.xBar
-    yEstimated_observingRobot     = observingRobot.yBar
-    thetaEstimated_observingRobot = observingRobot.thetaBar
-    
 
-    
-    rhoBar = (math.sqrt((xEstimated_observedRobot-xEstimated_observingRobot)**2  +        
-                     (yEstimated_observedRobot-yEstimated_observingRobot)**2))
-    
-    phiBar = (math.atan2(yEstimated_observedRobot-yEstimated_observingRobot, xEstimated_observedRobot-xEstimated_observingRobot) -             
-                     thetaEstimated_observingRobot)     
-    
-    phiBar = (2*math.pi + phiBar)%(2*math.pi)
-    
-    observingRobot.rhoBar = rhoBar
-    observingRobot.phiBar = phiBar
-       
-    observingRobot
-
-
+#########################################################################################################
 # Estimate Pose of the moved Robot
 def estimatePoseMovedRobot(movedRobot,stationaryRobot):
     
@@ -108,6 +87,84 @@ def estimatePoseMovedRobot(movedRobot,stationaryRobot):
     
     lastSigmaMovedRobot = movedRobot.sigma[-1]
     movedRobot.sigmaBar            = (Gmut)@(lastSigmaMovedRobot)@(np.transpose(Gmut)) + (Gut)@(Ut)@(np.transpose(Gut))
+    
+ #########################################################################################################
+
+def getRhoBarPhiBarMeasurements(observingRobot, observedRobot):
+    
+    xEstimated_observedRobot      = observedRobot.estimatedPose[-1][0]
+    yEstimated_observedRobot      = observedRobot.estimatedPose[-1][1]
+    
+    xEstimated_observingRobot     = observingRobot.xBar
+    yEstimated_observingRobot     = observingRobot.yBar
+    thetaEstimated_observingRobot = observingRobot.thetaBar
+    
+
+    
+    rhoBar = (math.sqrt((xEstimated_observedRobot-xEstimated_observingRobot)**2  +        
+                     (yEstimated_observedRobot-yEstimated_observingRobot)**2))
+    
+    phiBar = (math.atan2(yEstimated_observedRobot-yEstimated_observingRobot, xEstimated_observedRobot-xEstimated_observingRobot) -             
+                     thetaEstimated_observingRobot)     
+    
+    phiBar = (2*math.pi + phiBar)%(2*math.pi)
+    
+    observingRobot.rhoBar = rhoBar
+    observingRobot.phiBar = phiBar
+       
+    observingRobot
+
+    
+#########################################################################################################
+# Update Pose of the moved Robot
+def updatePoseMovedRobot(movedRobot,stationaryRobot):
+    Zt    = np.array([
+    [movedRobot.rho],
+    [movedRobot.phi]
+    ])
+    ZBart = np.array([
+    [movedRobot.rhoBar],
+    [movedRobot.phiBar]
+    ])
+    
+    xEstimated_stationaryRobot      = stationaryRobot.estimatedPose[-1][0]
+    yEstimated_stationaryRobot      = stationaryRobot.estimatedPose[-1][1]
+    
+    xBar                            = movedRobot.xBar
+    yBar                            = movedRobot.yBar
+    thetaBar                        = movedRobot.thetaBar
+    sigmaBar                        = movedRobot.sigmaBar
+    sigma_stationaryRobot           = stationaryRobot.sigma[-1]
+    
+    q = (math.sqrt((xEstimated_stationaryRobot-xBar)**2  + (yEstimated_stationaryRobot-yBar)**2))
+    
+    Hr = (1/q)*np.array([[-(xEstimated_stationaryRobot-xBar),-(yEstimated_stationaryRobot-yBar),0],
+                         [(yEstimated_stationaryRobot-yBar)/q,-(xEstimated_stationaryRobot-xBar)/q,-q]
+    ])
+    
+    Hl = (1/q)*np.array([[(xEstimated_stationaryRobot-xBar),(yEstimated_stationaryRobot-yBar),0],
+                         [-(yEstimated_stationaryRobot-yBar)/q,(xEstimated_stationaryRobot-xBar)/q,0]
+    ])
+    
+    Qt = np.array([[(movedRobot.deltaRHO)**2,0],
+                   [0,(movedRobot.deltaPHI)**2]
+    ])
+    
+    S = (Hr)@(sigmaBar)@(np.transpose(Hr)) + (Hl)@(sigma_stationaryRobot)@(np.transpose(Hl)) + Qt
+    print(S)
+    
+    Kt   = (sigmaBar)@(np.transpose(Hr))@(np.linalg.inv(S))
+    
+    myut = np.array([[xBar],
+                     [yBar],
+                     [thetaBar]]) + Kt@(Zt-ZBart)
+                     
+    
+    sigma  = (np.identity(3)-(Kt)@(Hr))@sigmaBar
+    print(myut)
+    print(sigma)
+    
+    
         
     
 #################################################### 
@@ -141,11 +198,9 @@ print("===============================================================")
 
 # Get relative Range Bearing Measurements between moved robot and Stationary Robot2
 getRhoPhiMeasurements(movedRobot, stationaryRobot2)
-getRhoPhiMeasurements(stationaryRobot2,movedRobot)
 
 
-
-# Estimate rho, and phi of Stationary robot 2 w.r.t moving robot
+# Estimate rhoBar, and phiBar of Stationary robot 2 w.r.t moving robot
 getRhoBarPhiBarMeasurements(movedRobot, stationaryRobot2)
 print([movedRobot.xBar,movedRobot.yBar,movedRobot.thetaBar])
 print([movedRobot.rhoBar,movedRobot.phiBar])
@@ -153,6 +208,28 @@ print([movedRobot.rho,movedRobot.phi])
 print(list(movedRobot.actualPose))
 print(list(movedRobot.estimatedPose))
 print(list(movedRobot.sigmaBar))
+
+
+'''
+# Update Pose of the moved Robot
+updatePoseMovedRobot(movedRobot,stationaryRobot2)
+
+# Move to new position
+movedRobot.moveRobot(np.array([4,4,1.5]))
+
+# Get relative Range Bearing Measurements between moved robot and Stationary Robot2
+getRhoPhiMeasurements(movedRobot, stationaryRobot2)
+getRhoPhiMeasurements(stationaryRobot2,movedRobot)
+
+# Estimate Pose and Covariance Matrix of Robot2
+estimatePoseMovedRobot(movedRobot,stationaryRobot2)
+
+# Get relative Range Bearing Measurements between moved robot and Stationary Robot1
+getRhoPhiMeasurements(movedRobot, stationaryRobot1)
+'''
+
+
+
 
 
 

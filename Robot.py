@@ -11,13 +11,14 @@ class Robot:
         self.rhoBar                    =   None
         self.phiBar                    =   None
         
-        self.deltaRHO                  =   0.0
-        self.deltaPHI                  =   0.0
+        self.deltaRHO                  =   0.1
+        self.deltaPHI                  =   0.05
         
         self.xBar                      =   None
         self.yBar                      =   None
         self.thetaBar                  =   None
         self.sigmaBar                  =   None
+        self.mu                        =   None
         
         self.actualPose                =   []
         self.estimatedPose             =   []
