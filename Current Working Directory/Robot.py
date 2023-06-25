@@ -10,14 +10,28 @@ class Robot:
         self.availableMoves         = numMoves
         self.moveSize               = moveSize
         
+        # Actual Pose of the Robot (Ground Truth)
         self.xActual                = []
         self.yActual                = []
         self.thetaActual            = []
         
+        # Estimated Pose of the robot (i.e the Pose Estimated by the EKF)
         self.xEstimated             = []
         self.yEstimated             = []
         self.thetaEstimated         = []
+ 
+        self.xBar                      =   None
+        self.yBar                      =   None
+        self.thetaBar                  =   None
+        self.sigmaBar                  =   None
         
+        self.rho                       =   None
+        self.rhoBar                    =   None
+        self.deltaRHO                  =   0.0
+        
+        self.phi                       =   None
+        self.phiBar                    =   None
+        self.deltaPHI                  =   0.0
         
         self.moveRobot()
 
@@ -41,37 +55,3 @@ class Robot:
                 self.thetaActual.append(random.uniform(0, 2*math.pi))
             
             self.availableMoves = self.availableMoves - 1
-        
-        
-        
-'''       
-        # Pose  = [x,y,theta]
-        # Sigma = 3x3 Matrix
-        
-        self.rho                       =   None
-        self.phi                       =   None
-        self.rhoBar                    =   None
-        self.phiBar                    =   None
-        
-        self.deltaRHO                  =   0.1
-        self.deltaPHI                  =   0.05
-        
-        self.xBar                      =   None
-        self.yBar                      =   None
-        self.thetaBar                  =   None
-        self.sigmaBar                  =   None
-        self.mu                        =   None
-        
-        self.actualPose                =   []
-        self.estimatedPose             =   []
-        self.sigma                     =   []
-        
-        self.actualPose.append(initialActualPose)
-        self.estimatedPose.append(initialActualPose)
-        self.sigma.append(np.zeros((3,3)))
-    
-        
-    def moveRobot(self, newActualPose):
-        self.actualPose.append(newActualPose)
-        
-'''
