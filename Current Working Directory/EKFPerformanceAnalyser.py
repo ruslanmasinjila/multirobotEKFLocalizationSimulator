@@ -7,9 +7,9 @@ import numpy as np
 from multirobotEKFLocalizationSimulator import *
 
 
-numSimulations  = 1
-numRobots       = 2
-numMoves        = 10
+numSimulations  = 50
+numRobots       = 5
+numMoves        = 100
 moveSize        = 3
 
 NEES           = [[] for nR in range(numRobots)]

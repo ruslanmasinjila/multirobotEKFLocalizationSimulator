@@ -65,7 +65,7 @@ def estimatePoseMovingRobot(m,p):
     # Find the sum of Estimated Theta and Phi of robot p
     # Estimated Theta is the estimated angle robot p makes with the global frame of reference
     # phi_pm is the bearing of robot m w.r.t robot p
-    thetaPlusPhi_p    = thetaEstimated_p + phi_pm
+    thetaPlusPhi_p    = (thetaEstimated_p + phi_pm)%(2*math.pi)
     
     if(thetaPlusPhi_p<=math.pi):
         m.thetaBar = (2*math.pi +(thetaPlusPhi_p  - phi_mp + math.pi))%(2*math.pi)
@@ -79,6 +79,8 @@ def estimatePoseMovingRobot(m,p):
                         [m.thetaBar]
     ]
     )
+    
+
         
     # Estimate the covariance matrix (SigmaBar) of the Moving Robot (m)
     Ut  =  np.array([[(deltaRHO_pm)**2,0,0],
@@ -247,11 +249,18 @@ def runSimulation(numRobots,numMoves,moveSize):
             m.yEstimated.append(m.muBar[1][0])
             m.thetaEstimated.append(m.muBar[2][0])
             m.sigma.append(m.sigmaBar)
+            
+            print("#############################")
+            print(m.robotID)
+            print([m.xEstimated[-1],m.yEstimated[-1],m.thetaEstimated[-1]])
+            print([m.xActual[-1],m.yActual[-1],m.thetaActual[-1]])
 
         else:
             break
             
     return robots
+
+robots = runSimulation(3,50,5)
 ###################################################################################################################################
 
 
